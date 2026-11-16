@@ -1,0 +1,14 @@
+Issues I found
+Sending messages is not implemented in the client. The send handler is empty in ChatWindow.jsx, and useSocket.js is empty. So, as you noted, the frontend cannot send or receive live messages yet. The server already listens for dm:send and emits dm:new in dm.handler.js. This is an unfinished feature, not a backend/client integration that is already supposed to work.
+
+User ID shapes are inconsistent, which will break message ownership and conversation names. Login and /me return user.id, while registration returns a Mongoose user with _id (auth.controller.js). The client checks user._id in ChatWindow.jsx and ConversationItem.jsx. Also, message history populates senderId as a user object, but the client compares its string form to the current user ID. As a result, messages can be treated as incoming even when they were sent by the current user.
+
+Registration/login validation is not being applied. The auth validators are flat Zod schemas in auth.validator.js, but validate.middleware.js looks for nested body, params, or query schemas. The auth routes pass those flat schemas to the middleware, so it skips parsing the request body. The controllers only check that fields are present.
+
+Logout does not revoke the refresh token. auth.services.js looks up the token using { hashed }, but the model field is hashedToken. The lookup therefore misses, while the route still clears the browser cookie. Separately, token.services.js records when a refresh token is used but does not reject reuse, so a previously rotated token can still be replayed.
+
+The server can start and report healthy before MongoDB is ready. app.js starts connectDB() without awaiting it, and db.js logs connection failures but doesn’t stop startup. The health endpoint can return OK while database-backed requests are failing.
+
+Client lint currently fails. npm run lint reports 18 errors and one warning, including hook-rule violations and unused variables/imports. In particular, useUsers.js calls useQuery inside functions that are not named as hooks. The production build does succeed. The backend’s configured test script is only a placeholder that exits with an error.
+
+Some visible controls are placeholders. The Logout button in ChatLayout.jsx has no action, and Sidebar.jsx always passes isSelected={false}, so conversation selection is not highlighted.
