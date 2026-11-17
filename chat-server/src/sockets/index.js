@@ -4,7 +4,9 @@ import { Server } from "socket.io";
 import env from "../config/env.js";
 import authSocketMiddleware from "./socket-middleware/auth.js";
 import typingHandlers from "./socket-handlers/typing.handler.js";
-import { presenceHandler } from "./socket-handlers/presence.handler.js";
+import { presenceHandler,
+     addUserToOnline,
+    removeUserFromOnline } from "./socket-handlers/presence.handler.js";
 import dmHandler from "./socket-handlers/dm.handler.js";
 import constants from "./socket-constants/constants.js";
 
@@ -19,7 +21,7 @@ const initializeSocket = (httpServer) => {
     io.use(authSocketMiddleware);
 
     // Event Listeners
-    io.on("connection", (socket) => {
+    io.on("connection", async (socket) => {
         console.log(`User connected: ${socket.id}`);
 
         const userId = socket.data.userId;
@@ -29,8 +31,14 @@ const initializeSocket = (httpServer) => {
             return;
         }
 
-        // Add user to online list
-        // addUserToOnline(userId);
+        try {
+            await addUserToOnline(userId, socket.id, socket.data.name);
+            await presenceHandler(io);
+        } catch (error) {
+            console.error("Failed to update online presence on connect:", error);
+            socket.disconnect(true);
+            return;
+        }
 
         // Join user's personal room for DMs
         socket.join(constants.USER_ROOM(userId));
@@ -41,10 +49,11 @@ const initializeSocket = (httpServer) => {
             userId: userId
         });
 
+
         // Broadcast online users to all clients
-        presenceHandler(io).catch((error) => {
-            console.error("Failed to broadcast online users:", error);
-        });
+        // presenceHandler(io).catch((error) => {
+        //     console.error("Failed to broadcast online users:", error);
+        // });
 
         // Register typing handlers
         typingHandlers(io, socket);
@@ -53,16 +62,23 @@ const initializeSocket = (httpServer) => {
         dmHandler(io, socket);
 
         // Handle disconnect
-        socket.on("disconnect", (reason) => {
-
-            // Remove user from online list
-            // removeUserFromOnline(userId);
+        socket.on('disconnect', async (reason)=> {
+            try {
+                await removeUserFromOnline(userId, socket.id)
+                await presenceHandler(io)
+            } catch (error) {
+                console.error('Failed to update online presence on disconnect:', error)
+            }
             
-            presenceHandler(io).catch((error) => {
-                console.error("Failed to broadcast online users:", error);
-            });
             console.log(`User disconnected: ${socket.id} - Reason: ${reason}`);
-        });
+        })
+
+        // socket.on("disconnect", (reason) => {
+        //     presenceHandler(io).catch((error) => {
+        //         console.error("Failed to broadcast online users:", error);
+        //     });
+        //     console.log(`User disconnected: ${socket.id} - Reason: ${reason}`);
+        // });
     });
 
     return io;

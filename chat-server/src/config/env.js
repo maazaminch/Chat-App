@@ -8,8 +8,8 @@ const envSchema = z.object({
         MONGO_URI: z.string().min(1, "MONGO_URI is required"),
 
         JWT_ACCESS_SECRET: z.string().min(1, "JWT_ACCESS_SECRET is required"),
-        ACCESS_TOKEN_TTL: z.string().default("2m"),
-        REFRESH_TOKEN_TTL: z.string().default("4m"),
+        ACCESS_TOKEN_TTL: z.string().default("15m"),
+        REFRESH_TOKEN_TTL: z.string().default("1d"),
         
         BCRYPT_COST: z.coerce.number().int().min(4).max(31).default(12),
         
@@ -19,6 +19,8 @@ const envSchema = z.object({
             .transform((value) => value === "true"),
 
         CLIENT_URL: z.string().min(1, "CLIENT_URL is required"),
+        REDIS_HOST: z.string().default("localhost"),
+        REDIS_PORT: z.coerce.number().int().default(6379),
 })
 
 const _env = envSchema.safeParse(process.env);
