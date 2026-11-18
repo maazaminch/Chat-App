@@ -16,5 +16,19 @@ export const chatServices = {
   createConversation: async (userId) => {
     const response = await api.post(`/convo/create-convo/${userId}`)
     return response
+  },
+
+  uploadAttachment: async (conversationId, file, text = '') => {
+    const formData = new FormData();
+    formData.append('file', file)
+    formData.append('text', text)
+
+    const response = await api.post(`/message/upload-attachment/${conversationId}`, formData)
+    return response
+  },
+
+  getAttachment: async (messageId) => {
+    const response = await api.get(`/message/get-attachment/${messageId}`, { responseType: 'blob' })
+    return  response
   }
 }

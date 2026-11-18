@@ -79,6 +79,38 @@ class MessageService {
             }
         };
     };
+
+
+    // File uploads
+    static uploadAttachment = async (
+        conversationId,
+        userId,
+        text,
+        attachment
+    ) => {
+        await ConvoService.assertMember(conversationId, userId)
+
+        const cleanedText = typeof text === 'string' ? text.trim() : ''
+
+        if(cleanedText.length > 500) {
+            throw new ApiError(400, 'Message text cannot exceed 500 characters')
+        }
+
+        const message = await Message.create({
+            conversationId,
+            senderId: userId,
+            text: cleanedText,
+            attachment
+        })
+
+        await Conversation.findByIdAndUpdate(
+            conversationId,
+            { $set: { lastMessage: message._id } },
+            { runValidators: true }
+        )
+
+        return message;
+    }
 }
 
 export default MessageService;

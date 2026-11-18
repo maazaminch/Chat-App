@@ -1,4 +1,5 @@
 import { formatTime, getInitials } from '../../../lib/utils.js';
+import { MessageAttachment } from './MessageAttachment.jsx';
 
 const MessageBubble = ({ message, isSent, senderName }) => {
   // Format timestamp (absolute time for messages)
@@ -29,8 +30,16 @@ const MessageBubble = ({ message, isSent, senderName }) => {
           <p className="text-xs text-gray-300 mb-1">{senderName}</p>
         )}
 
-        {/* Message text */}
-        <p className="text-sm break-words">{message.text}</p>
+        {/* Message text or attachment */}
+        {message.text && <p className="text-sm wrap-break-word">{message.text}</p>}
+
+        {message.attachment && (
+          <MessageAttachment
+            messageId={message._id}
+            attachment={message.attachment}
+          />
+        )}
+
 
         {/* Timestamp */}
         <p className={`text-xs mt-1 ${isSent ? 'text-green-200' : 'text-gray-400'}`}>

@@ -3,6 +3,8 @@ import { useChat } from "@/hooks/useChat";
 import { useAuth } from "@/hooks/useAuth";
 import { useChatSocket } from "@/hooks/socket/useChatSocket";
 import MessageBubble from "./MessageBubble";
+import { AttachmentUploader } from "./AttachmentUploader";
+import { useUploadAttachment } from "@/hooks/useUploadAttachment";
 
 import Loader from "../feedback/Loader";
 import ErrorState from "../feedback/ErrorState";
@@ -18,10 +20,17 @@ const ChatWindow = ({
     isConnected,
     connectionError
 }) => {
+
+    // upload attachment
+    const [selectedFile, setSelectedFile] = useState(null)
+    const [fileInputKey, setFileInputKey] = useState(0)
+    const { uploadAttachment } = useUploadAttachment(conversationId)
+
     const { messages, messagesLoading, messagesError } = useChat(conversationId);
     const { user } = useAuth();
 
     const { sendMessage, isSending } = useChatSocket(socket, conversationId);
+    const isSendingMessage = isSending || uploadAttachment.isPending;
     const messagesEndRef = useRef(null);
     const [inputText, setInputText] = useState('');
 
@@ -45,7 +54,22 @@ const ChatWindow = ({
     const handleSendMessage = () => {
         const text = inputText.trim();
 
-        if (!text || !conversationId || isSending) return;
+        if ((!text && !selectedFile) || !conversationId || isSendingMessage) return;
+
+        if(selectedFile) {
+            uploadAttachment.mutate(
+                { file: selectedFile, text},
+                {
+                    onSuccess: ()=> {
+                        setSelectedFile(null)
+                        setInputText("")
+                        setFileInputKey((key)=> key + 1)
+                    }
+                }
+            )
+            return
+        }
+
         sendMessage(text, () => setInputText(''));
     };
 
@@ -132,12 +156,26 @@ const ChatWindow = ({
                     placeholder="Type a message..."
                     className="flex-1 bg-gray-700 text-white border-gray-600 focus:ring-2 focus:ring-blue-500"
                 />
+                <AttachmentUploader
+                    selectedFile={selectedFile}
+                    onFileSelect={setSelectedFile}
+                    inputKey={fileInputKey}
+                    disabled={!isConnected || isSendingMessage}
+                />
                 <Button
                     onClick={handleSendMessage}
-                    disabled={!inputText.trim() || !isConnected || isSending}
+                    disabled={
+                    (!inputText.trim() && !selectedFile) ||
+                    !isConnected ||
+                    isSendingMessage
+                    }
                     className="bg-blue-500 hover:bg-blue-600 disabled:bg-gray-600"
                 >
-                    {isSending ? 'Sending...' : 'Send'}
+                    {uploadAttachment.isPending
+                        ? "Uploading..."
+                        : isSending
+                            ? "Sending..."
+                            : "Send"}
                 </Button>
             </div>
 

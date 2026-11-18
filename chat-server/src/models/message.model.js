@@ -1,5 +1,12 @@
 import mongoose from "mongoose";
 
+const attachmentSchema = new mongoose.Schema({
+    originalName: { type: String, required: true },
+    storageName: { type: String, required: true },
+    mimeType: { type: String, required: true },
+    size: { type: Number, required: true },
+}, { _id: false });
+
 const messageSchema = new mongoose.Schema({
     senderId: {
         type: mongoose.Schema.Types.ObjectId,
@@ -8,14 +15,18 @@ const messageSchema = new mongoose.Schema({
     },
     text: {
         type: String,
-        required: true,
         trim: true,
-        maxlength: 500
+        maxlength: 500,
+        default: ""
     },
     conversationId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Conversation",
         required: true
+    },
+    attachment: {
+        type: attachmentSchema,
+        default: undefined
     }
 }, {
     timestamps: true

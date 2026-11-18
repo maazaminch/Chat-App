@@ -1,6 +1,7 @@
 import ApiError from "../utils/apiError.js";
 import ApiResponse from "../utils/apiResponse.js";
 import mongoose from "mongoose";
+import multer from "multer";
 import { ZodError } from "zod";
 
 // Error Handler concept
@@ -30,6 +31,10 @@ const errorHandler = (err, req, res, next) => {
                 message: i.message
             }));
             error = new ApiError(400, "Validation error", errors);
+        }
+        else if(error instanceof multer.MulterError){
+            const statusCode = error.code === "LIMIT_FILE_SIZE" ? 413 : 400;
+            error = new ApiError(statusCode, error.message);
         }
         else if(error instanceof mongoose.Error.ValidationError){
             // mongoose provide object of errors

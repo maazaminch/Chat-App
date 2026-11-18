@@ -24,6 +24,27 @@ export const removeUserFromOnline = async (userId, socketId) => {
     }
 }
 
+export const clearOnlineUsers = async () => {
+    let cursor = "0";
+
+    do {
+        const [nextCursor, keys] = await redis.scan(
+            cursor,
+            "MATCH",
+            "online:user:*:sockets",
+            "COUNT",
+            100
+        );
+
+        cursor = nextCursor;
+
+        if (keys.length > 0) {
+            await redis.del(...keys);
+        }
+    } while (cursor !== "0");
+
+    await redis.del(ONLINE_USERS_KEY);
+};
 
 export const presenceHandler = async (io) => {
     const users = await redis.hgetall(ONLINE_USERS_KEY)

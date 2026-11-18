@@ -33,12 +33,19 @@ api.interceptors.request.use((config) => {
     config.headers.Authorization = `Bearer ${token}`
   }
 
+  if (typeof FormData !== 'undefined' && config.data instanceof FormData) {
+    config.headers.delete('Content-Type')
+  }
+
   return config
 })
 
 // 2. Return only response.data, and handle expired access token
 api.interceptors.response.use(
   (response) => {
+    if (response.config.responseType === "blob") {
+      return response.data;
+    }
     // Backend sends: { statusCode, data: { ... }, message }
     // We want to return: { ...data, message }
     return {
