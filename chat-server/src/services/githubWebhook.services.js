@@ -80,7 +80,7 @@ class GithubWebhookService {
         }
 
         const repository = validation.data.repository.full_name;
-        const pusher = validation.data.pusher?.name || "Someone";
+        const pusher = validation.data.pusher?.name || "Someone!";
         const commitCount = validation.data.commits.length;
 
         const message = await Message.create({
