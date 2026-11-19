@@ -5,6 +5,7 @@ import { useChatSocket } from "@/hooks/socket/useChatSocket";
 import MessageBubble from "./MessageBubble";
 import { AttachmentUploader } from "./AttachmentUploader";
 import { useUploadAttachment } from "@/hooks/useUploadAttachment";
+import GithubWebhookDialog from "./GithubWebhookDialog";
 
 import Loader from "../feedback/Loader";
 import ErrorState from "../feedback/ErrorState";
@@ -33,6 +34,7 @@ const ChatWindow = ({
     const isSendingMessage = isSending || uploadAttachment.isPending;
     const messagesEndRef = useRef(null);
     const [inputText, setInputText] = useState('');
+    const [isGithubWebhookDialogOpen, setIsGithubWebhookDialogOpen] = useState(false);
 
     const messagesArray = messages?.messages || [];
 
@@ -93,13 +95,21 @@ const ChatWindow = ({
     return (
         <div className="flex flex-col h-full bg-gray-900">
             {/* Header */}
-            <div className="p-4 border-b border-gray-700 bg-gray-700">
-                <h2 className="text-white font-semibold text-lg">{recipientName}</h2>
-                {isTyping && (
-                    <p className="text-sm text-blue-400 animate-pulse mt-1">
-                        typing...
-                    </p>
-                )}
+            <div className="flex items-center justify-between border-b border-gray-700 bg-gray-700 p-4">
+                <div>
+                    <h2 className="text-white font-semibold text-lg">{recipientName}</h2>
+                    {isTyping && (
+                        <p className="text-sm text-blue-400 animate-pulse mt-1">
+                            typing...
+                        </p>
+                    )}
+                </div>
+                <Button
+                    type="button"
+                    onClick={() => setIsGithubWebhookDialogOpen(true)}
+                >
+                    Integrations
+                </Button>
             </div>
 
             {/* Messages */}
@@ -178,9 +188,13 @@ const ChatWindow = ({
                             : "Send"}
                 </Button>
             </div>
-
         </div>
-        </div>
+            <GithubWebhookDialog
+                conversationId={conversationId}
+                open={isGithubWebhookDialogOpen}
+                onClose={() => setIsGithubWebhookDialogOpen(false)}
+            />
+            </div>
     );
 };
 
