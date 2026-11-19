@@ -1,6 +1,6 @@
 import ApiError from '../utils/apiError.js';
 
-const TARGETS = ['body', 'params', 'query'];
+const TARGETS = ['body', 'params', 'query', 'headers'];
 
 const validate = (schema) => async (req, res, next) => {
     try {
