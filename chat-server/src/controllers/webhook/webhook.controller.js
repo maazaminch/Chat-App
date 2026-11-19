@@ -19,9 +19,9 @@ class WebhookController {
             new ApiResponse(
                 201, 
                 integration,
-                'GitHub webhook created' 
+                'GitHub webhook created!' 
             )
-        )
+        ) 
     })
 
 
