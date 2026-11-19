@@ -44,7 +44,7 @@ class GithubWebhookService {
         const integration = await GithubWebhook.findById(integrationId);
 
         if (!integration || !integration.enabled) {
-        throw new ApiError(404, "Webhook not found or disabled");
+        throw new ApiError(404, "Webhook not found or disabled!");
         }
 
         const receivedSignature = signature?.replace(/^sha256=/, "");
