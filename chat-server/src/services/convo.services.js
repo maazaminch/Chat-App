@@ -133,6 +133,27 @@ class ConvoService {
         await conversation.save();
         return conversation;
     }
+
+    static removeIntegration = async (conversationId, userId, integrationData) => {
+        const conversation = await ConvoService.assertMember(conversationId, userId);
+        const resourceId = integrationData.resourceId.trim().toLowerCase();
+        const matchingIntegration = conversation.integrations.some((integration) =>
+            integration.provider === integrationData.provider &&
+            integration.resourceId === resourceId
+        );
+
+        if (!matchingIntegration) {
+            throw new ApiError(404, "Repository integration not found");
+        }
+
+        conversation.integrations = conversation.integrations.filter((integration) =>
+            integration.provider !== integrationData.provider ||
+            integration.resourceId !== resourceId
+        );
+
+        await conversation.save();
+        return conversation;
+    }
 }
 
 export default ConvoService;

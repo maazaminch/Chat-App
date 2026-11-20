@@ -68,6 +68,22 @@ class ConvoController {
         );
     })
 
+    static removeIntegration = asyncHandler(async (req, res) => {
+        const conversation = await ConvoService.removeIntegration(
+            req.params.convoId,
+            req.user._id,
+            req.body
+        );
+
+        return res.status(200).json(
+            new ApiResponse(
+                200,
+                conversation,
+                "Repository disconnected from conversation"
+            )
+        );
+    })
+
 }
 
 export default ConvoController;

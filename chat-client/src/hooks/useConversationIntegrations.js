@@ -22,7 +22,25 @@ export const useAddConversationIntegration = (conversationId) => {
     },
   });
 
+  const removeIntegrationMutation = useMutation({
+    mutationFn: (integration) =>
+      chatServices.removeConversationIntegration({
+        conversationId,
+        ...integration,
+      }),
+    onSuccess: async (response) => {
+      await queryClient.invalidateQueries({ queryKey: ["conversations"] });
+      toast.success(response.message || "Repository disconnected");
+    },
+    onError: (error) => {
+      toast.error(
+        error.response?.data?.message || "Failed to disconnect repository"
+      );
+    },
+  });
+
   return {
     addIntegration: addIntegrationMutation,
+    removeIntegration: removeIntegrationMutation,
   };
 };

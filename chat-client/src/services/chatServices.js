@@ -27,6 +27,13 @@ export const chatServices = {
     return response
   },
 
+  removeConversationIntegration: async ({ conversationId, provider, resourceId }) => {
+    const response = await api.delete(`/convo/integrations/${conversationId}`, {
+      data: { provider, resourceId },
+    })
+    return response
+  },
+
   uploadAttachment: async (conversationId, file, text = '') => {
     const formData = new FormData();
     formData.append('file', file)

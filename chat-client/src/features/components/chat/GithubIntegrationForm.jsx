@@ -5,7 +5,8 @@ import { Input } from "@/features/ui/input";
 
 const GithubIntegrationForm = ({ conversationId, integrations = [] }) => {
   const [resourceId, setResourceId] = useState("");
-  const { addIntegration } = useAddConversationIntegration(conversationId);
+  const { addIntegration, removeIntegration } =
+    useAddConversationIntegration(conversationId);
 
   const githubIntegrations = integrations.filter(
     (integration) => integration.provider === "github"
@@ -62,8 +63,30 @@ const GithubIntegrationForm = ({ conversationId, integrations = [] }) => {
           </p>
           <ul className="space-y-1 text-sm text-gray-300">
             {githubIntegrations.map((integration) => (
-              <li key={`${integration.resourceId}-${integration.provider}`}>
-                {integration.resourceId} ({integration.events.join(", ")})
+              <li
+                key={`${integration.resourceId}-${integration.provider}`}
+                className="flex items-center justify-between gap-3"
+              >
+                <span>
+                  {integration.resourceId} ({integration.events.join(", ")})
+                </span>
+                <Button
+                  type="button"
+                  variant="destructive"
+                  size="sm"
+                  disabled={removeIntegration.isPending}
+                  onClick={() =>
+                    removeIntegration.mutate({
+                      provider: integration.provider,
+                      resourceId: integration.resourceId,
+                    })
+                  }
+                >
+                  {removeIntegration.isPending &&
+                  removeIntegration.variables?.resourceId === integration.resourceId
+                    ? "Removing..."
+                    : "Remove"}
+                </Button>
               </li>
             ))}
           </ul>

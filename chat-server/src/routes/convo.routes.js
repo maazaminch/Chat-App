@@ -37,5 +37,11 @@ convoRouter.post(
     ConvoController.addIntegration
 );
 
+convoRouter.delete(
+    "/integrations/:convoId",
+    validate(convoValidator.removeIntegrationSchema),
+    ConvoController.removeIntegration
+);
+
 
 export default convoRouter;
