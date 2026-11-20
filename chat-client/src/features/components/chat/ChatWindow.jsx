@@ -5,7 +5,7 @@ import { useChatSocket } from "@/hooks/socket/useChatSocket";
 import MessageBubble from "./MessageBubble";
 import { AttachmentUploader } from "./AttachmentUploader";
 import { useUploadAttachment } from "@/hooks/useUploadAttachment";
-import GithubWebhookDialog from "./GithubWebhookDialog";
+import GithubIntegrationForm from "./GithubIntegrationForm";
 
 import Loader from "../feedback/Loader";
 import ErrorState from "../feedback/ErrorState";
@@ -34,7 +34,7 @@ const ChatWindow = ({
     const isSendingMessage = isSending || uploadAttachment.isPending;
     const messagesEndRef = useRef(null);
     const [inputText, setInputText] = useState('');
-    const [isGithubWebhookDialogOpen, setIsGithubWebhookDialogOpen] = useState(false);
+    const [showGithubIntegrationForm, setShowGithubIntegrationForm] = useState(false);
 
     const messagesArray = messages?.messages || [];
 
@@ -96,7 +96,7 @@ const ChatWindow = ({
         <div className="flex flex-col h-full bg-gray-900">
             {/* Header */}
             <div className="flex items-center justify-between border-b border-gray-700 bg-gray-700 p-4">
-                <div>
+                <div className="flex items-center gap-3">
                     <h2 className="text-white font-semibold text-lg">{recipientName}</h2>
                     {isTyping && (
                         <p className="text-sm text-blue-400 animate-pulse mt-1">
@@ -106,11 +106,19 @@ const ChatWindow = ({
                 </div>
                 <Button
                     type="button"
-                    onClick={() => setIsGithubWebhookDialogOpen(true)}
+                    variant="outline"
+                    onClick={() => setShowGithubIntegrationForm((visible) => !visible)}
                 >
-                    Integrations
+                    {showGithubIntegrationForm ? "Close GitHub" : "GitHub repository"}
                 </Button>
             </div>
+
+            {showGithubIntegrationForm && (
+                <GithubIntegrationForm
+                    conversationId={conversationId}
+                    integrations={conversation?.integrations || []}
+                />
+            )}
 
             {/* Messages */}
             <div className="flex-1 overflow-y-auto p-4">
@@ -189,11 +197,6 @@ const ChatWindow = ({
                 </Button>
             </div>
         </div>
-            <GithubWebhookDialog
-                conversationId={conversationId}
-                open={isGithubWebhookDialogOpen}
-                onClose={() => setIsGithubWebhookDialogOpen(false)}
-            />
             </div>
     );
 };

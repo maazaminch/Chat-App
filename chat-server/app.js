@@ -11,8 +11,8 @@ import authRouter from "./src/routes/auth.routes.js";
 import convoRouter from "./src/routes/convo.routes.js";
 import messageRouter from "./src/routes/message.routes.js";
 import userRouter from "./src/routes/user.routes.js";
-// import adminRouter from "./src/routes/admin.routes.js";
 import webhookRouter from "./src/routes/webhook.routes.js";
+// import adminRouter from "./src/routes/admin.routes.js";
 
 const app = express();
 const isProd = process.env.NODE_ENV === 'production';
@@ -29,11 +29,11 @@ app.use(cors({
 app.use(morgan(isProd ? 'combined' : 'dev'))
 
 // Body parsers
-// GitHub’s signature is computed over the exact raw bytes, so save them before JSON parsing.
+// GitHub signs the exact request bytes, so the backend must retain the raw body before JSON parsing
 app.use(express.json({
   verify: (req, res, buffer) => {
-    if (req.originalUrl.startsWith('/api/v1/webhooks/github')) {
-      req.rawBody = Buffer.from(buffer)
+    if(req.originalUrl.split('?')[0].startsWith('/api/v1/webhooks')) {
+       req.rawBody = Buffer.from(buffer);
     }
   }
 }));

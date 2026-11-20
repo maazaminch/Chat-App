@@ -31,5 +31,11 @@ convoRouter.get(
     ConvoController.assertMember
 );
 
+convoRouter.post(
+    "/integrations/:convoId",
+    validate(convoValidator.addIntegrationSchema),
+    ConvoController.addIntegration
+);
+
 
 export default convoRouter;

@@ -18,6 +18,15 @@ export const chatServices = {
     return response
   },
 
+  addConversationIntegration: async ({ conversationId, provider, resourceId, events }) => {
+    const response = await api.post(`/convo/integrations/${conversationId}`, {
+      provider,
+      resourceId,
+      events,
+    })
+    return response
+  },
+
   uploadAttachment: async (conversationId, file, text = '') => {
     const formData = new FormData();
     formData.append('file', file)

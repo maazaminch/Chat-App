@@ -14,6 +14,18 @@ const conversationSchema = new mongoose.Schema({
         ref: "User",
         required: true
     }],
+    integrations: [
+        {
+            provider: { type: String, required: true },
+            resourceId: { type: String, required: true },
+            events: { type: [String], required: true },
+            linkedBy: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "User",
+                required: true
+            }
+        }
+    ],
     // Reference to the last message in this conversation
     lastMessage: {
         type: mongoose.Schema.Types.ObjectId,
@@ -26,6 +38,11 @@ const conversationSchema = new mongoose.Schema({
 // Index for faster lookups
 conversationSchema.index({ directKey: 1 }, { unique: true });
 conversationSchema.index({ memberIds: 1, updatedAt: -1 });
+conversationSchema.index({
+    "integrations.provider": 1,
+    "integrations.resourceId": 1,
+    "integrations.events": 1
+});
 
 const Conversation = mongoose.model("Conversation", conversationSchema);
 

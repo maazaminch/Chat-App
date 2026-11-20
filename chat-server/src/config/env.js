@@ -21,6 +21,8 @@ const envSchema = z.object({
         CLIENT_URL: z.string().min(1, "CLIENT_URL is required"),
         REDIS_HOST: z.string().default("localhost"),
         REDIS_PORT: z.coerce.number().int().default(6379),
+
+        GITHUB_WEBHOOK_SECRET: z.string().min(1),
 })
 
 const _env = envSchema.safeParse(process.env);

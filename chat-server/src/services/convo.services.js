@@ -108,6 +108,31 @@ class ConvoService {
         }
         return conversation;
     }
+
+    static addIntegration = async (conversationId, userId, integrationData) => {
+        const conversation = await ConvoService.assertMember(conversationId, userId);
+        const resourceId = integrationData.resourceId.trim().toLowerCase();
+
+        const existingIntegration = conversation.integrations.find((integration) =>
+            integration.provider === integrationData.provider &&
+            integration.resourceId === resourceId
+        );
+
+        if (existingIntegration) {
+            existingIntegration.events = integrationData.events;
+            existingIntegration.linkedBy = userId;
+        } else {
+            conversation.integrations.push({
+                provider: integrationData.provider,
+                resourceId,
+                events: integrationData.events,
+                linkedBy: userId
+            });
+        }
+
+        await conversation.save();
+        return conversation;
+    }
 }
 
 export default ConvoService;

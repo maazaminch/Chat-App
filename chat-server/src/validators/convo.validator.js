@@ -18,6 +18,19 @@ class convoValidator {
         })
     });
 
+    static addIntegrationSchema = z.object({
+        params: z.object({
+            convoId: z.string().regex(/^[a-f\d]{24}$/i, "Invalid conversation ID")
+        }),
+        body: z.object({
+            provider: z.literal("github"),
+            resourceId: z.string()
+                .trim()
+                .regex(/^[a-z\d_.-]+\/[a-z\d_.-]+$/i, "Use owner/repository format"),
+            events: z.array(z.enum(["push"])).min(1)
+        })
+    });
+
 }
 
 export default convoValidator;
