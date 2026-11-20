@@ -12,7 +12,7 @@ class WebhookController {
         });
 
         return res.status(202).json(
-            new ApiResponse(202, result, "Webhook received")
+            new ApiResponse(202, result, "Webhook received!")
         );
     });
 }
