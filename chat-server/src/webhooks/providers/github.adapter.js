@@ -34,7 +34,11 @@ export const githubAdapter = {
         if (event !== "push") return null;
 
         const repository = payload.repository?.full_name;
-        if (!repository || !Array.isArray(payload.commits)) {
+        const branch = typeof payload.ref === "string"
+            ? payload.ref.match(/^refs\/heads\/(.+)$/)?.[1]
+            : null;
+
+        if (!repository || !branch || !Array.isArray(payload.commits)) {
             throw new ApiError(400, "Invalid GitHub push payload");
         }
 
@@ -44,7 +48,7 @@ export const githubAdapter = {
             provider: "github",
             resourceId: repository.toLowerCase(),
             event: "push",
-            text: `GitHub: ${pusher} pushed ${payload.commits.length} commit(s) to ${repository}.`,
+            text: `GitHub: ${pusher} pushed ${payload.commits.length} commit(s) to ${repository} on branch ${branch}.`,
         };
     },
 };
