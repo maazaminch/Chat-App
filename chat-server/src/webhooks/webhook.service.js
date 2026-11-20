@@ -7,7 +7,7 @@ import { providers } from "./providers/index.js";
 class WebhookService {
     static receive = async ({ providerName, headers, rawBody, io }) => {
         if (!Object.hasOwn(providers, providerName)) {
-            throw new ApiError(404, "Webhook provider not found");
+            throw new ApiError(404, "Webhook provider not found!");
         }
 
         const provider = providers[providerName];
