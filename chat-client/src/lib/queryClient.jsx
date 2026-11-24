@@ -5,7 +5,12 @@ import { toast } from 'sonner';
 
 export const queryClient = new QueryClient({
   defaultOptions: {
-    queries: { retry: false, refetchOnWindowFocus: false },
+    queries: {
+      retry: false,
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: true,
+      gcTime: 30 * 60 * 1000,
+    },
   },
   mutationCache: new MutationCache({
     onError: (error) => toast.error(error.message), // backend message

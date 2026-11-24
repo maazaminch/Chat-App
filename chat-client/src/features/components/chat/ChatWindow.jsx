@@ -27,7 +27,13 @@ const ChatWindow = ({
     const [fileInputKey, setFileInputKey] = useState(0)
     const { uploadAttachment } = useUploadAttachment(conversationId)
 
-    const { messages, messagesLoading, messagesError } = useChat(conversationId);
+    const {
+        messages,
+        messagesLoading,
+        messagesFetching,
+        messagesFetchStatus,
+        messagesError
+    } = useChat(conversationId);
     const { user } = useAuth();
 
     const { sendMessage, isSending } = useChatSocket(socket, conversationId);
@@ -122,11 +128,27 @@ const ChatWindow = ({
 
             {/* Messages */}
             <div className="flex-1 overflow-y-auto p-4">
-            {messagesLoading ? (
+            {messages && messagesError && (
+                <p className="mb-2 text-sm text-yellow-300">
+                    Couldn’t refresh messages. Showing previously loaded messages.
+                </p>
+            )}
+            {messages && messagesFetching && (
+                <p className="mb-2 text-sm text-gray-400">
+                    Refreshing messages...
+                </p>
+            )}
+
+            {!messages && messagesFetchStatus === "paused" ? (
+                <NoData
+                    text="Offline"
+                    description="These messages have not been loaded on this device yet."
+                />
+            ) : !messages && messagesLoading ? (
                 <Loader
                     text='Messages loading...'
                 />
-            ) : messagesError ? (
+            ) : !messages && messagesError ? (
                 <ErrorState
                     text='Error Occured'
                 />

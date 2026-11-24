@@ -18,13 +18,25 @@ export const useChat = (conversationId = null, searchQuery = null) => {
   })
 
   // Fetch all conversations (with search)
-  const { data: conversations, isLoading: conversationsLoading, error: conversationsError } = useQuery({
+  const {
+    data: conversations,
+    isLoading: conversationsLoading,
+    isFetching: conversationsFetching,
+    fetchStatus: conversationsFetchStatus,
+    error: conversationsError
+  } = useQuery({
     queryKey: ['conversations', searchQuery],
     queryFn: () => chatServices.getConversations(searchQuery),
   })
 
   // Fetch messages for specific conversation (conditional)
-  const { data: messages, isLoading: messagesLoading, error: messagesError } = useQuery({
+  const {
+    data: messages,
+    isLoading: messagesLoading,
+    isFetching: messagesFetching,
+    fetchStatus: messagesFetchStatus,
+    error: messagesError
+  } = useQuery({
     queryKey: ['messages', conversationId],
     queryFn: () => chatServices.getMessages(conversationId),
     enabled: !!conversationId, // Only run when conversationId is provided
@@ -35,10 +47,14 @@ export const useChat = (conversationId = null, searchQuery = null) => {
 
     conversations,
     conversationsLoading,
+    conversationsFetching,
+    conversationsFetchStatus,
     conversationsError,
 
     messages,
     messagesLoading,
+    messagesFetching,
+    messagesFetchStatus,
     messagesError
   }
 }

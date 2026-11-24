@@ -1,6 +1,6 @@
 import { useAuth } from '@/hooks/useAuth';
 
-const ChatLayout = ({sidebar, chatWindow, headerContent}) => {
+const ChatLayout = ({ sidebar, chatWindow, headerContent, isOnline }) => {
     const { logout } = useAuth();
 
     return (
@@ -24,6 +24,15 @@ const ChatLayout = ({sidebar, chatWindow, headerContent}) => {
                 </div>
                 )}
             </header>
+
+            {!isOnline && (
+                <div
+                    role="status"
+                    className="bg-yellow-700 px-4 py-2 text-center text-sm text-white"
+                >
+                    You’re offline. Previously loaded chat data may still be available.
+                </div>
+            )}
 
             <main className='flex flex-1 overflow-hidden'>
                 {/* Sidebar */}

@@ -109,6 +109,7 @@ class ConvoService {
         return conversation;
     }
 
+    // webhook related endpoints
     static addIntegration = async (conversationId, userId, integrationData) => {
         const conversation = await ConvoService.assertMember(conversationId, userId);
         const resourceId = integrationData.resourceId.trim().toLowerCase();

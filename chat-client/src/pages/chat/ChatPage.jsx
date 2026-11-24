@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { useChat } from "@/hooks/useChat";
 import { useSocket } from "@/hooks/socket/useSocket";
+import { useOnlineStatus } from "@/hooks/useOnlineStatus";
 import Sidebar from "@/features/components/chat/Sidebar";
 import ChatWindow from "@/features/components/chat/ChatWindow";
 import ChatLayout from "@/features/layout/ChatLayout";
@@ -14,6 +15,7 @@ const ChatPage = () => {
     const [selectedConversation, setSelectedConversation] = useState(null);
     const { createConversation, conversations } = useChat(null, '');
     const { socket, isConnected, connectionError } = useSocket()
+    const isOnline = useOnlineStatus()
 
     const [onlineUsers, setOnlineUsers] = useState([])
     useEffect(() => {
@@ -57,6 +59,7 @@ const ChatPage = () => {
 
     return (
         <ChatLayout
+            isOnline={isOnline}
             sidebar={
                 <Sidebar
                     selectedConversationId={selectedConversationId}

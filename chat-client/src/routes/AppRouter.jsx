@@ -5,6 +5,7 @@ import RegisterPage from '../pages/auth/RegisterPage.jsx'
 import LoginPage from '../pages/auth/LoginPage.jsx'
 
 import ChatPage from '@/pages/chat/ChatPage.jsx'
+import ApiKeyPage from '@/pages/settings/ApiKeyPage.jsx'
 
 function NotFound () {
     return (
@@ -26,6 +27,14 @@ const AppRouter = () => {
                     element={
                         <ProtectedRoute>
                             <ChatPage />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/settings/api-key"
+                    element={
+                        <ProtectedRoute>
+                            <ApiKeyPage />
                         </ProtectedRoute>
                     }
                 />

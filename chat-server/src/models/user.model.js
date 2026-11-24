@@ -33,6 +33,15 @@ const userSchema = new Schema(
             type: Boolean,
             default: false,
         },
+
+        // Related to API key gen
+        apiKeyHash: {
+            type: String,
+            index: true,
+            select: false
+        },
+        apiKeyPrefix: String,
+        apiKeyCreatedAt: Date
     }, 
     {
         timestamps: true

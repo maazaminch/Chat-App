@@ -12,7 +12,9 @@ import convoRouter from "./src/routes/convo.routes.js";
 import messageRouter from "./src/routes/message.routes.js";
 import userRouter from "./src/routes/user.routes.js";
 import webhookRouter from "./src/routes/webhook.routes.js";
+import apiKeyRouter from "./src/routes/apiKey.routes.js";
 // import adminRouter from "./src/routes/admin.routes.js";
+
 
 const app = express();
 const isProd = process.env.NODE_ENV === 'production';
@@ -69,6 +71,7 @@ app.use('/api/v1/convo', convoRouter);
 app.use('/api/v1/message', messageRouter);
 app.use('/api/v1/user', userRouter);
 app.use("/api/v1/webhooks", webhookRouter);
+app.use("/api/v1/api-keys", apiKeyRouter);
 // app.use('/api/v1/admin', adminRouter);
 
 app.use(errorHandler);

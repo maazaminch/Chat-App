@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useChat } from '@/hooks/useChat';
 import ConversationItem from './ConversationItem';
 import Loader from '../feedback/Loader';
@@ -6,6 +7,7 @@ import ErrorState from '../feedback/ErrorState';
 import NoData from '../feedback/NoData';
 import { getInitials } from '@/lib/utils';
 import { Input } from '@/features/ui/input';
+import { Button } from '@/features/ui/button';
 
 const Sidebar = ({ 
   selectedConversationId, 
@@ -16,7 +18,13 @@ const Sidebar = ({
   const [searchQuery, setSearchQuery] = useState('');
 
   // Use useChat hook with search query
-  const { conversations, conversationsLoading, conversationsError } = useChat(null, searchQuery.trim());
+  const {
+    conversations,
+    conversationsLoading,
+    conversationsFetching,
+    conversationsFetchStatus,
+    conversationsError,
+  } = useChat(null, searchQuery.trim());
 
   // Get arrays from responses
   const conversationsArray = Array.isArray(conversations?.conversations) ? conversations.conversations :
@@ -38,7 +46,12 @@ const Sidebar = ({
     <div className="flex flex-col h-full bg-gray-800">
       {/* Header with Search */}
       <div className="p-4 border-b border-gray-700">
-        <h2 className="text-white text-lg font-semibold mb-3">Conversations</h2>
+        <div className="mb-3 flex items-center justify-between gap-2">
+          <h2 className="text-white text-lg font-semibold">Conversations</h2>
+          <Button asChild variant="outline" size="sm">
+            <Link to="/settings/api-key">API key</Link>
+          </Button>
+        </div>
         <Input
           type="text"
           placeholder="Search users..."
@@ -50,9 +63,25 @@ const Sidebar = ({
 
       {/* List */}
       <div className="flex-1 overflow-y-auto">
-        {conversationsLoading ? (
+        {conversations && conversationsError && (
+          <p className="px-3 py-2 text-sm text-yellow-300">
+            Couldn’t refresh conversations. Showing previously loaded data.
+          </p>
+        )}
+        {conversations && conversationsFetching && (
+          <p className="px-3 py-2 text-sm text-gray-400">
+            Refreshing conversations...
+          </p>
+        )}
+
+        {!conversations && conversationsFetchStatus === "paused" ? (
+          <NoData
+            text="Offline"
+            description="Conversations have not been loaded on this device yet."
+          />
+        ) : !conversations && conversationsLoading ? (
           <Loader text="Loading..." />
-        ) : conversationsError ? (
+        ) : !conversations && conversationsError ? (
           <ErrorState text="Error loading conversations" />
         ) : conversationsArray.length === 0 && newUsersArray.length === 0 ? (
           <NoData
